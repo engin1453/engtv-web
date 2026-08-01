@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ENGTV Player Web</title>
+<link rel="icon" href="assets/logo.png" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- GİRİŞ EKRANI -->
+  <div id="login-screen" class="screen active">
+    <div class="login-card">
+      <img src="assets/logo.png" alt="ENGTV" class="brand-logo" />
+      <div class="brand-sub">Web Player</div>
+
+      <form id="xtream-form">
+        <label>Profil adı</label>
+        <input type="text" id="x-name" placeholder="Örn: Ev Paneli" required />
+        <label>Sunucu adresi (host:port)</label>
+        <input type="text" id="x-host" placeholder="http://panel.example.com:8080" required />
+        <label>Kullanıcı adı</label>
+        <input type="text" id="x-user" required />
+        <label>Şifre</label>
+        <input type="password" id="x-pass" required />
+        <button type="submit" class="btn-primary">Bağlan</button>
+      </form>
+
+      <div id="login-error" class="error-msg"></div>
+      <div id="saved-profiles" class="saved-profiles"></div>
+    </div>
+  </div>
+
+  <!-- ANA UYGULAMA -->
+  <div id="app-screen" class="screen">
+    <aside class="sidebar" id="app-sidebar">
+      <img src="assets/logo.png" alt="ENGTV" class="sidebar-logo" />
+      <nav class="nav">
+        <button class="nav-btn" data-section="home">🏠 Ana Sayfa</button>
+        <button class="nav-btn" data-section="live">📺 Canlı TV</button>
+        <button class="nav-btn" data-section="movies">🎬 Filmler</button>
+        <button class="nav-btn" data-section="series">📀 Diziler</button>
+        <button class="nav-btn" data-section="favorites">⭐ Favoriler</button>
+      </nav>
+      <button id="logout-btn" class="btn-ghost">Profil Değiştir</button>
+    </aside>
+
+    <main class="content">
+      <div class="topbar" id="app-topbar">
+        <input type="text" id="search-box" placeholder="Ara..." />
+        <div id="active-profile-label" class="profile-label"></div>
+      </div>
+
+      <div id="home-tiles" class="home-tiles">
+        <button class="home-tile" data-section="live"><span class="home-tile-icon">📺</span><span>Canlı Kanallar</span></button>
+        <button class="home-tile" data-section="movies"><span class="home-tile-icon">🎬</span><span>Filmler</span></button>
+        <button class="home-tile" data-section="series"><span class="home-tile-icon">📀</span><span>Diziler</span></button>
+        <button class="home-tile" data-section="favorites"><span class="home-tile-icon">⭐</span><span>Favoriler</span></button>
+      </div>
+
+      <div class="panes" id="panes">
+        <div class="category-list-wrap" id="category-list-wrap">
+          <div class="category-list" id="category-list"></div>
+        </div>
+        <div class="item-grid" id="item-grid"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- FİLM/DİZİ DETAY EKRANI -->
+  <div id="detail-modal" class="detail-modal">
+    <div class="detail-backdrop" id="detail-backdrop"></div>
+    <div class="detail-scrim"></div>
+    <div class="detail-content">
+      <button id="detail-close" class="detail-back">← <span id="detail-title"></span></button>
+      <div class="detail-body">
+        <img id="detail-poster" class="detail-poster" alt="" />
+        <div class="detail-info">
+          <div class="detail-meta-rows" id="detail-meta-rows"></div>
+          <div class="detail-actions">
+            <button id="detail-primary" class="btn-primary"></button>
+            <button id="detail-fav" class="fav-star"></button>
+          </div>
+        </div>
+      </div>
+      <p id="detail-plot" class="detail-plot"></p>
+    </div>
+  </div>
+
+  <!-- OYNATICI -->
+  <div class="player-pane" id="player-pane">
+    <div class="mini-list" id="mini-list"></div>
+    <div class="video-wrap" id="video-wrap">
+      <div class="player-top" id="player-top">
+        <span id="player-title"></span>
+        <div>
+          <button id="top-list-toggle-btn" title="Liste">☰</button>
+          <button id="chan-prev" class="live-only">⏮ Önceki</button>
+          <button id="seek-back">⏪ 10sn</button>
+          <button id="seek-fwd">10sn ⏩</button>
+          <button id="chan-next" class="live-only">Sonraki ⏭</button>
+          <select id="audio-track-select" class="track-select" style="display:none;"></select>
+          <select id="subtitle-track-select" class="track-select" style="display:none;"></select>
+          <button id="player-fullscreen">⛶ Tam Ekran</button>
+          <button id="player-close">✕ Kapat</button>
+        </div>
+      </div>
+      <div class="progress-row" id="progress-row" style="display:none;">
+        <span id="progress-current" class="progress-time">00:00</span>
+        <div class="progress-track" id="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <span id="progress-duration" class="progress-time">00:00</span>
+      </div>
+      <div class="video-stage" id="video-stage">
+        <video id="video" controls autoplay></video>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1/dist/mpegts.js"></script>
+  <script src="xtream.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
