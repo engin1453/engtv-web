@@ -1,4 +1,9 @@
-// Xtream Codes API istemcisi (web sürümü - tek adres)
+// Xtream Codes API istemcisi (web sürümü) — CORS'u aşmak için tüm istekler
+// kendi sunucumuzdaki /api/proxy uç noktası üzerinden geçirilir.
+function proxied(url) {
+  return '/api/proxy?url=' + encodeURIComponent(url);
+}
+
 class XtreamClient {
   constructor(host, username, password) {
     this.host = host.replace(/\/+$/, '');
@@ -11,12 +16,12 @@ class XtreamClient {
   }
 
   async _getJson(action, extra = '') {
-    const url = this.apiUrl(action, extra);
+    const url = proxied(this.apiUrl(action, extra));
     let res;
     try {
       res = await fetch(url);
     } catch (netErr) {
-      throw new Error(`Sunucuya ulaşılamadı (CORS engeli olabilir): ${netErr.message}`);
+      throw new Error(`Sunucuya ulaşılamadı: ${netErr.message}`);
     }
     if (!res.ok) throw new Error(`Sunucu hatası (${res.status})`);
     const text = await res.text();
@@ -45,7 +50,8 @@ class XtreamClient {
   async getAllSeries() { return (await this._getJson('get_series')) || []; }
   async getSeriesInfo(seriesId) { return (await this._getJson('get_series_info', `&series_id=${seriesId}`)) || {}; }
 
-  liveUrl(streamId, ext = 'm3u8') { return `${this.host}/live/${this.username}/${this.password}/${streamId}.${ext}`; }
-  vodUrl(streamId, ext) { return `${this.host}/movie/${this.username}/${this.password}/${streamId}.${ext}`; }
-  seriesUrl(episodeId, ext) { return `${this.host}/series/${this.username}/${this.password}/${episodeId}.${ext}`; }
+  // Yayın adresleri de proxy üzerinden döndürülür (CORS aşımı burada da geçerli)
+  liveUrl(streamId, ext = 'm3u8') { return proxied(`${this.host}/live/${this.username}/${this.password}/${streamId}.${ext}`); }
+  vodUrl(streamId, ext) { return proxied(`${this.host}/movie/${this.username}/${this.password}/${streamId}.${ext}`); }
+  seriesUrl(episodeId, ext) { return proxied(`${this.host}/series/${this.username}/${this.password}/${episodeId}.${ext}`); }
 }

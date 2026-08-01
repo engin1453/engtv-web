@@ -545,7 +545,15 @@ function tryPlayUrl(item, url, attempt) {
   };
 
   if (url.endsWith('.m3u8') && window.Hls && Hls.isSupported()) {
-    hlsInstance = new Hls({ manifestLoadingMaxRetry: 2, levelLoadingMaxRetry: 2 });
+    class ProxyLoader extends Hls.DefaultConfig.loader {
+      load(context, cfg, callbacks) {
+        if (context.url && context.url.indexOf('/api/proxy') !== 0) {
+          context.url = '/api/proxy?url=' + encodeURIComponent(context.url);
+        }
+        super.load(context, cfg, callbacks);
+      }
+    }
+    hlsInstance = new Hls({ manifestLoadingMaxRetry: 2, levelLoadingMaxRetry: 2, loader: ProxyLoader });
     hlsInstance.loadSource(url); hlsInstance.attachMedia(video);
     hlsInstance.on(Hls.Events.ERROR, (_e, data) => { if (data.fatal) { hlsInstance.destroy(); hlsInstance = null; advance(data.details); } });
     hlsInstance.on(Hls.Events.AUDIO_TRACKS_UPDATED, () => populateHlsAudioTracks(hlsInstance));
