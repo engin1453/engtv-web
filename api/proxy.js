@@ -19,7 +19,10 @@ export default async function handler(request) {
     return new Response('Geçersiz url', { status: 400 });
   }
 
-  const upstreamHeaders = {};
+  const upstreamHeaders = {
+    'User-Agent': 'VLC/3.0.20 LibVLC/3.0.20',
+    'Accept': '*/*'
+  };
   const range = request.headers.get('range');
   if (range) upstreamHeaders['range'] = range;
 
