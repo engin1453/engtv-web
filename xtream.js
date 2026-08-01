@@ -23,7 +23,11 @@ class XtreamClient {
     } catch (netErr) {
       throw new Error(`Sunucuya ulaşılamadı: ${netErr.message}`);
     }
-    if (!res.ok) throw new Error(`Sunucu hatası (${res.status})`);
+    if (!res.ok) {
+      let detail = '';
+      try { detail = (await res.text()).slice(0, 200); } catch {}
+      throw new Error(`Sunucu hatası (${res.status})${detail ? ' — ' + detail : ''}`);
+    }
     const text = await res.text();
     if (!text || !text.trim()) return [];
     try {
